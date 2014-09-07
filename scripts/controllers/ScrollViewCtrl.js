@@ -10,6 +10,9 @@ angular.module('petrusApp')
     $scope.enginePipe = new EventHandler();
     Engine.pipe($scope.enginePipe);
 
+    $scope.width = 320;
+    $scope.height = 568;
+
     $scope.options = {
       mainScrollView: {
         paginated: true,
