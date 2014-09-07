@@ -6,6 +6,7 @@
   <title></title>
 
   <link rel="stylesheet" href="bower_components/famous-angular/dist/famous-angular.css">
+  <link rel="stylesheet" href="css/location.css">
 
 </head>
 <body ng-controller="ScrollViewCtrl">
@@ -40,12 +41,28 @@
                  endValue="6.283"
                  curve="linear"></animate>
       </fa-animation>
+
     </fa-view>
 
-    <fa-view id="location" fa-pipe-to="enginePipe">
+    <fa-view id="location" fa-pipe-to="enginePipe" ng-controller="LocationCtrl">
       <fa-modifier>
         <fa-image-surface fa-image-url="images/screen-location/cover.png" fa-size="[width,height]">
+
         </fa-image-surface>
+      </fa-modifier>
+
+
+      <fa-modifier fa-translate="[60,155,1]">
+        <fa-surface>
+          <input class="input-location" type="text" ng-model="weather.locationName" ng-class="{smaller: weather.locationName.length > 15 }">
+        </fa-surface>
+      </fa-modifier>
+
+      <fa-modifier ng-repeat="model in keys" fa-size="[model.width,model.height]"
+                   fa-translate="[model.left,model.top,1]">
+        <fa-surface fa-click="keyClick(model.key, $event)">
+
+        </fa-surface>
       </fa-modifier>
     </fa-view>
 
@@ -79,6 +96,8 @@
 
 <script src="scripts/app.js"></script>
 <script src="scripts/controllers/ScrollViewCtrl.js"></script>
+<script src="scripts/controllers/LocationCtrl.js"></script>
+<script src="scripts/services/weatherService.js"></script>
 
 </body>
 </html>

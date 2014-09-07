@@ -1,0 +1,12 @@
+.input-location, .input-location:disabled {
+    width: 160px;
+    border: 0;
+    text-align: center;
+    height: 30px;
+    font-size: 18px;
+    color: #000;
+}
+
+.input-location.smaller {
+    font-size: 13px;
+}
