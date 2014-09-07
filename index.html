@@ -27,6 +27,19 @@
         <fa-image-surface fa-image-url="images/screen-date/cover.png" fa-size="[width,height]">
         </fa-image-surface>
       </fa-modifier>
+
+      <fa-modifier class="rotateMod" fa-origin="[.5, .5]" fa-translate="[-80,-156,1]">
+        <fa-image-surface fa-image-url="images/screen-date/clock-hand.png" fa-size="[50,50]">
+        </fa-image-surface>
+      </fa-modifier>
+
+      <fa-animation autoplay="true" duration="2000" loop="true">
+        <animate targetModSelector=".rotateMod"
+                 field="rotateZ"
+                 startValue="0"
+                 endValue="6.283"
+                 curve="linear"></animate>
+      </fa-animation>
     </fa-view>
 
     <fa-view id="location" fa-pipe-to="enginePipe">
