@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html ng-app="petrusApp">
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+
+  <link rel="stylesheet" href="bower_components/famous-angular/dist/famous-angular.css">
+
+</head>
+<body ng-controller="ScrollViewCtrl">
+
+<fa-app style="width: 320px; height: 568px;">
+
+  <fa-scroll-view id="main-scroll-view" fa-pipe-from="enginePipe"
+                  fa-options="options.mainScrollView">
+
+    <fa-view id="start" fa-pipe-to="enginePipe">
+      <fa-modifier>
+        <fa-image-surface fa-image-url="images/screen-start/cover.png" fa-size="[320,568]">
+        </fa-image-surface>
+      </fa-modifier>
+    </fa-view>
+
+    <fa-view id="date" fa-pipe-to="enginePipe">
+      <fa-modifier>
+        <fa-image-surface fa-image-url="images/screen-date/cover.png" fa-size="[320,568]">
+        </fa-image-surface>
+      </fa-modifier>
+    </fa-view>
+
+    <fa-view id="location" fa-pipe-to="enginePipe">
+      <fa-modifier>
+        <fa-image-surface fa-image-url="images/screen-location/cover.png" fa-size="[320,568]">
+        </fa-image-surface>
+      </fa-modifier>
+    </fa-view>
+
+    <fa-view id="wish" fa-pipe-to="enginePipe">
+      <fa-modifier>
+        <fa-image-surface fa-image-url="images/screen-wish/cover.png" fa-size="[320,568]">
+        </fa-image-surface>
+      </fa-modifier>
+    </fa-view>
+
+
+    <fa-view id="send" fa-pipe-to="enginePipe">
+      <fa-modifier>
+        <fa-image-surface fa-image-url="images/screen-send/cover.png" fa-size="[320,568]">
+        </fa-image-surface>
+      </fa-modifier>
+    </fa-view>
+
+  </fa-scroll-view>
+
+</fa-app>
+
+
+<!-- bower:js -->
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angular-touch/angular-touch.js"></script>
+
+<script src="bower_components/famous/famous-global.js"></script>
+<script src="bower_components/famous-angular/dist/famous-angular.js"></script>
+<!-- endbower -->
+
+<script src="scripts/app.js"></script>
+<script src="scripts/controllers/ScrollViewCtrl.js"></script>
+
+</body>
+</html>
