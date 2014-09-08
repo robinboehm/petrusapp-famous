@@ -110,10 +110,16 @@
       <fa-modifier fa-translate="options.translate">
         <fa-surface fa-size="options.size" fa-click="onClick()">
           <hebel min-height="74" options="options" style="height:{{options.size[1]}}px"
-                  on-submit=""></hebel>
+                  on-submit="submit()"></hebel>
         </fa-surface>
       </fa-modifier>
 
+
+      <fa-modifier fa-translate="[76,360]">
+        <fa-surface fa-size="[261,307]">
+          <div class="bolt" ng-class="{active:active}"></div>
+        </fa-surface>
+      </fa-modifier>
     </fa-view>
 
   </fa-scroll-view>

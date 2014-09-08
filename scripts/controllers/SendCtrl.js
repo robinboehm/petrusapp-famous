@@ -8,4 +8,8 @@ angular.module('petrusApp')
       size: [180, 225]
     };
 
+    $scope.submit = function () {
+      $scope.active = true;
+    }
+
   });

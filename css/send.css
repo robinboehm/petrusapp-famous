@@ -14,3 +14,25 @@ hebel.active {
     left: 79px;
     height: 124px;
 }
+
+
+
+.bolt {
+    background-image: url("../images/screen-send/blitz.png");
+    width: 261pt;
+    height: 307pt;
+    display: block;
+    background-size: 40%;
+    background-repeat: no-repeat;
+    opacity: 0;
+}
+
+.bolt.active{
+    -webkit-animation: bolt-animation 1.5s linear infinite;
+}
+
+@-webkit-keyframes bolt-animation {
+    0%   { opacity: 0; }
+    50%  { opacity: 1; }
+    100% { opacity: 0; }
+}
