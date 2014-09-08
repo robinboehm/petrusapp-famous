@@ -3,8 +3,6 @@
 angular.module('petrusApp')
   .controller('LocationCtrl', function ($scope, weatherService) {
 
-    $scope.weather = weatherService;
-
     $scope.keys = [
       {key: 'q', top: 296, left: 17, width: 33, height: 46, bgLeft: 0, bgTop: 0},
       {key: 'w', top: 290, left: 45, width: 34, height: 47, bgLeft: -50, bgTop: 0},

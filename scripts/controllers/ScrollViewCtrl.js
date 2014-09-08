@@ -2,7 +2,9 @@
 
 
 angular.module('petrusApp')
-  .controller('ScrollViewCtrl', function ($scope,$famous) {
+  .controller('ScrollViewCtrl', function ($scope,$famous,weatherService) {
+
+    $scope.weather = weatherService;
 
     var EventHandler = $famous['famous/core/EventHandler'];
     var Transitionable = $famous['famous/transitions/Transitionable'];
