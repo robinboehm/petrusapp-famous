@@ -7,6 +7,7 @@
 
   <link rel="stylesheet" href="bower_components/famous-angular/dist/famous-angular.css">
   <link rel="stylesheet" href="css/location.css">
+  <link rel="stylesheet" href="css/send.css">
 
 </head>
 <body ng-controller="ScrollViewCtrl">
@@ -93,11 +94,20 @@
     </fa-view>
 
 
-    <fa-view id="send" fa-pipe-to="enginePipe">
+    <fa-view id="send" fa-pipe-to="enginePipe" ng-controller="SendCtrl">
       <fa-modifier>
         <fa-image-surface fa-image-url="images/screen-send/cover.png" fa-size="[width,height]">
         </fa-image-surface>
       </fa-modifier>
+
+
+      <fa-modifier fa-translate="options.translate">
+        <fa-surface fa-size="options.size" fa-click="onClick()">
+          <hebel min-height="74" options="options" style="height:{{options.size[1]}}px"
+                  on-submit=""></hebel>
+        </fa-surface>
+      </fa-modifier>
+
     </fa-view>
 
   </fa-scroll-view>
@@ -116,7 +126,9 @@
 <script src="scripts/app.js"></script>
 <script src="scripts/controllers/ScrollViewCtrl.js"></script>
 <script src="scripts/controllers/LocationCtrl.js"></script>
+<script src="scripts/controllers/SendCtrl.js"></script>
 <script src="scripts/services/WeatherService.js"></script>
+<script src="scripts/directives/hebelDirective.js"></script>
 
 </body>
 </html>
