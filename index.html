@@ -67,10 +67,29 @@
     </fa-view>
 
     <fa-view id="wish" fa-pipe-to="enginePipe">
+
+
+      <fa-modifier class="rotateDisk" fa-translate="[-10,-85,-1]">
+        <fa-modifier fa-rotate-z="{{weather.weatherType}} * (6.28 / 7)" fa-origin="[0.5, 0.5]" fa-duration="500">
+          <fa-image-surface fa-click="weather.weatherType = weather.weatherType + 1"
+                            fa-image-url="images/screen-wish/weather-disk.png" fa-size="[290,290]">
+          </fa-image-surface>
+        </fa-modifier>
+
+      </fa-modifier>
+
       <fa-modifier>
         <fa-image-surface fa-image-url="images/screen-wish/cover.png" fa-size="[width,height]">
         </fa-image-surface>
       </fa-modifier>
+
+      <fa-modifier fa-translate="[240,170,1]">
+        <fa-surface fa-click="weather.weatherType = weather.weatherType + 1"
+                    fa-size="[80,80]">
+        </fa-surface>
+      </fa-modifier>
+
+
     </fa-view>
 
 
