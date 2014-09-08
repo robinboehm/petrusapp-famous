@@ -5,7 +5,7 @@ angular.module('petrusApp')
 
     $scope.options = {
       translate: [75, 80],
-      size: [180, 221]
+      size: [180, 225]
     };
 
   });
