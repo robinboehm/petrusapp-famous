@@ -59,6 +59,12 @@
         </fa-surface>
       </fa-modifier>
 
+      <fa-modifier fa-translate="[20,35,1]">
+        <fa-surface fa-size="[180,92]">
+          <div class="bell active"></div>
+        </fa-surface>
+      </fa-modifier>
+
       <fa-modifier ng-repeat="model in keys" fa-size="[model.width,model.height]"
                    fa-translate="[model.left,model.top,1]">
         <fa-surface fa-click="keyClick(model.key, $event)">

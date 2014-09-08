@@ -10,3 +10,31 @@
 .input-location.smaller {
     font-size: 13px;
 }
+
+.bell {
+    border: 0;
+    width: 180px;
+    height: 92px;
+    background-repeat: no-repeat;
+    background-position: 0 -86px;;
+    background-image: url(../images/screen-location/bell.png);
+    background-size: 159px;
+}
+
+.bell.active{
+    -webkit-animation: bell-animation 0.3s steps(1, end) infinite;
+}
+
+@-webkit-keyframes bell-animation {
+    0%, 100% {
+        background-position: 0 0;
+    }
+
+    33% {
+        background-position: 0 -86px;
+    }
+
+    66% {
+        background-position: 0 -171px;
+    }
+}
