@@ -2,12 +2,16 @@
 <html ng-app="petrusApp">
 <head lang="en">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, minimal-ui"/>
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, minimal-ui"/>
   <title></title>
 
   <link rel="stylesheet" href="bower_components/famous-angular/dist/famous-angular.css">
+  <link rel="stylesheet" href="bower_components/Spinning-Wheel/spinningwheel.css"/>
   <link rel="stylesheet" href="css/location.css">
   <link rel="stylesheet" href="css/send.css">
+  <link rel="stylesheet" href="css/wish.css">
+  <link rel="stylesheet" href="css/spinningwheel.css">
 
 </head>
 <body ng-controller="ScrollViewCtrl">
@@ -17,14 +21,14 @@
   <fa-scroll-view id="main-scroll-view" fa-pipe-from="enginePipe"
                   fa-options="options.mainScrollView">
 
-    <fa-view id="start" fa-pipe-to="enginePipe">
+    <!--<fa-view id="start" fa-pipe-to="enginePipe">
       <fa-modifier>
         <fa-image-surface fa-image-url="images/screen-start/cover.png" fa-size="[width,height]">
         </fa-image-surface>
       </fa-modifier>
     </fa-view>
 
-    <fa-view id="date" fa-pipe-to="enginePipe">
+    <fa-view id="date" fa-pipe-to="enginePipe" ng-controller="DateCtrl">
       <fa-modifier>
         <fa-image-surface fa-image-url="images/screen-date/cover.png" fa-size="[width,height]">
         </fa-image-surface>
@@ -43,6 +47,12 @@
                  curve="linear"></animate>
       </fa-animation>
 
+      <fa-modifier fa-translate="[30,190,-1]">
+        <fa-surface fa-background-color="'orange'" fa-size="[250,215]">
+          <div id="spinningwheel"></div>
+        </fa-surface>
+      </fa-modifier>
+
     </fa-view>
 
     <fa-view id="location" fa-pipe-to="enginePipe" ng-controller="LocationCtrl">
@@ -55,7 +65,8 @@
 
       <fa-modifier fa-translate="[60,155,1]">
         <fa-surface>
-          <input class="input-location" type="text" ng-model="weather.locationName" ng-class="{smaller: weather.locationName.length > 15 }">
+          <input class="input-location" type="text" ng-model="weather.locationName"
+                 ng-class="{smaller: weather.locationName.length > 15 }">
         </fa-surface>
       </fa-modifier>
 
@@ -71,18 +82,15 @@
 
         </fa-surface>
       </fa-modifier>
-    </fa-view>
+    </fa-view>-->
 
     <fa-view id="wish" fa-pipe-to="enginePipe">
 
 
-      <fa-modifier class="rotateDisk" fa-translate="[-10,-85,-1]">
-        <fa-modifier fa-rotate-z="{{weather.weatherType}} * (6.28 / 7)" fa-origin="[0.5, 0.5]" fa-duration="500">
-          <fa-image-surface fa-click="weather.weatherType = weather.weatherType + 1"
-                            fa-image-url="images/screen-wish/weather-disk.png" fa-size="[290,290]">
-          </fa-image-surface>
-        </fa-modifier>
-
+      <fa-modifier class="rotateDisk" fa-translate="[10,55,-1]">
+          <fa-surface fa-click="weather.weatherType = weather.weatherType + 1">
+            <div class="weather-disk" style="-webkit-transform: rotate({{weather.weatherType * (360 / 7) }}deg) translateZ(0)"></div>
+          </fa-surface>
       </fa-modifier>
 
       <fa-modifier>
@@ -110,7 +118,7 @@
       <fa-modifier fa-translate="options.translate">
         <fa-surface fa-size="options.size" fa-click="onClick()">
           <hebel min-height="74" options="options" style="height:{{options.size[1]}}px"
-                  on-submit="submit()"></hebel>
+                 on-submit="submit()"></hebel>
         </fa-surface>
       </fa-modifier>
 
@@ -130,15 +138,17 @@
 <!-- bower:js -->
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-touch/angular-touch.js"></script>
-
+<script src="bower_components/angular-scrolly/angular-scrolly.js"></script>
 <script src="bower_components/famous/famous-global.js"></script>
 <script src="bower_components/famous-angular/dist/famous-angular.js"></script>
+<script src="bower_components/Spinning-Wheel/spinningwheel.js"></script>
 <!-- endbower -->
 
 <script src="scripts/app.js"></script>
 <script src="scripts/controllers/ScrollViewCtrl.js"></script>
 <script src="scripts/controllers/LocationCtrl.js"></script>
 <script src="scripts/controllers/SendCtrl.js"></script>
+<script src="scripts/controllers/DateCtrl.js"></script>
 <script src="scripts/services/WeatherService.js"></script>
 <script src="scripts/directives/hebelDirective.js"></script>
 

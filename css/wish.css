@@ -1,0 +1,8 @@
+.weather-disk {
+    background-image: url("../images/screen-wish/weather-disk.png");
+    width: 210pt;
+    height: 210pt;
+    transition-duration: 2s;
+    display: block;
+    background-size: cover;
+}
