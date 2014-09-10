@@ -84,7 +84,7 @@
       </fa-modifier>
     </fa-view>-->
 
-    <fa-view id="wish" fa-pipe-to="enginePipe">
+    <fa-view id="wish" fa-pipe-to="enginePipe" ng-controller="WishCtrl">
 
 
       <fa-modifier class="rotateDisk" fa-translate="[10,55,-1]">
@@ -102,6 +102,16 @@
         <fa-surface fa-click="weather.weatherType = weather.weatherType + 1"
                     fa-size="[80,80]">
         </fa-surface>
+      </fa-modifier>
+
+      <fa-modifier fa-translate="[130,160,1]">
+        <fa-surface fa-size="[50,180]" fa-touchstart="handleTouch($event)" fa-touchmove="handleTouch($event)">
+        </fa-surface>
+        <fa-modifier fa-translate="[0,-temperature*1.8+51*1.8,1]">
+          <fa-surface fa-background-color="'black'" fa-size="[25,3]">
+
+          </fa-surface>
+        </fa-modifier>
       </fa-modifier>
 
 
@@ -149,6 +159,7 @@
 <script src="scripts/controllers/LocationCtrl.js"></script>
 <script src="scripts/controllers/SendCtrl.js"></script>
 <script src="scripts/controllers/DateCtrl.js"></script>
+<script src="scripts/controllers/WishCtrl.js"></script>
 <script src="scripts/services/WeatherService.js"></script>
 <script src="scripts/directives/hebelDirective.js"></script>
 
