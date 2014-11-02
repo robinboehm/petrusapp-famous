@@ -2,7 +2,11 @@
 
 
 angular.module('petrusApp')
-  .controller('ScrollViewCtrl', function ($scope,$famous,weatherService) {
+  .controller('ScrollViewCtrl', function ($scope, $famous, weatherService, $window) {
+
+
+    $window.$famous = $famous;
+
 
     $scope.weather = weatherService;
 
@@ -15,12 +19,14 @@ angular.module('petrusApp')
     $scope.width = 320;
     $scope.height = 568;
 
+    $scope.animation = {
+      earthquake: false
+    };
+
     $scope.options = {
       mainScrollView: {
         paginated: true,
-        direction: 0, //horizontal
-        speedLimit: 5,
-        margin: 10000
+        direction: 0
       }
     }
 

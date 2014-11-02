@@ -5,7 +5,6 @@
     "angular": "1.2.21",
     "angular-animate": "1.2.21",
     "angular-touch": "1.2.21",
-    "famous-angular": "0.3.0",
-    "famous": "http://code.famo.us/famous/global/0.2.2/famous-global-0.2.2.tar.gz"
+    "famous-angular": "0.5.0"
   }
 }

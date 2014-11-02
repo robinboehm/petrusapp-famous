@@ -14,13 +14,14 @@
   <link rel="stylesheet" href="css/spinningwheel.css">
 
 </head>
-<body ng-controller="ScrollViewCtrl">
+<body ng-controller="ScrollViewCtrl" ng-class="{ 'fade-out' : animation.fadeOut, 'fade-in' : animation.fadeIn }">
 
-<fa-app style="width: 320px; height: 568px;">
+<fa-app style="width: 320px; height: 568px;" ng-class="{ 'earthquake' : animation.earthquake}">
 
   <fa-scroll-view id="main-scroll-view" fa-pipe-from="enginePipe"
                   fa-options="options.mainScrollView">
 
+    
     <fa-view id="start" fa-pipe-to="enginePipe">
       <fa-modifier>
         <fa-image-surface fa-image-url="images/screen-start/cover.png" fa-size="[width,height]">
@@ -140,6 +141,72 @@
       </fa-modifier>
     </fa-view>
 
+
+    <fa-view id="letter" fa-pipe-to="enginePipe">
+      <fa-modifier>
+        <fa-image-surface fa-image-url="images/screen-letter/cover.png" fa-size="[width,height]">
+        </fa-image-surface>
+      </fa-modifier>
+    </fa-view>
+
+    <fa-view id="list" fa-pipe-to="enginePipe">
+      <fa-modifier>
+        <fa-image-surface fa-image-url="images/screen-list/cover.jpg" fa-size="[width,height]">
+        </fa-image-surface>
+      </fa-modifier>
+
+      <fa-modifier fa-translate="[120,135]">
+        <fa-surface fa-size="[261,307]">
+         <span>000</span>
+        </fa-surface>
+      </fa-modifier>
+
+
+      <fa-modifier fa-translate="[180,125]">
+        <fa-surface fa-size="[261,307]">
+          <span>000</span>
+        </fa-surface>
+      </fa-modifier>
+
+      <fa-modifier fa-translate="[240,120]">
+        <fa-surface fa-size="[261,307]">
+          <span>000</span>
+        </fa-surface>
+      </fa-modifier>
+
+
+      <fa-modifier fa-translate="[130,205]">
+        <fa-surface fa-size="[261,307]">
+          <span>000</span>
+        </fa-surface>
+      </fa-modifier>
+
+      <fa-modifier fa-translate="[190,200]">
+        <fa-surface fa-size="[261,307]">
+          <span>000</span>
+        </fa-surface>
+      </fa-modifier>
+
+
+      <fa-modifier fa-translate="[250,195]">
+        <fa-surface fa-size="[261,307]">
+          <span>000</span>
+        </fa-surface>
+      </fa-modifier>
+
+
+      <fa-modifier fa-translate="[245,285]">
+        <fa-surface fa-size="[261,307]">
+          <span>000</span>
+        </fa-surface>
+      </fa-modifier>
+
+
+
+
+
+    </fa-view>
+
   </fa-scroll-view>
 
 </fa-app>
@@ -149,7 +216,7 @@
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-touch/angular-touch.js"></script>
 <script src="bower_components/angular-scrolly/angular-scrolly.js"></script>
-<script src="bower_components/famous/famous-global.js"></script>
+<script src="vendor/famous-global/famous-global.js"></script>
 <script src="bower_components/famous-angular/dist/famous-angular.js"></script>
 <script src="bower_components/Spinning-Wheel/spinningwheel.js"></script>
 <!-- endbower -->

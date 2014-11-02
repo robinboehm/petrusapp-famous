@@ -15,8 +15,6 @@ hebel.active {
     height: 124px;
 }
 
-
-
 .bolt {
     background-image: url("../images/screen-send/bolt.png");
     width: 261pt;
@@ -31,8 +29,42 @@ hebel.active {
     -webkit-animation: bolt-animation 1.5s linear infinite;
 }
 
+.earthquake {
+    -webkit-animation: earthquake .2s linear infinite;
+    -webkit-animation-delay: 1s;
+}
+
+.fade-out {
+    -webkit-animation: fade-out 30s linear infinite;
+    -webkit-animation-delay: 1s;
+}
+
+
+.fade-in {
+    -webkit-animation: fade-in 3s linear infinite;
+    -webkit-animation-iteration-count: 1;
+}
+
 @-webkit-keyframes bolt-animation {
     0%   { opacity: 0; }
     50%  { opacity: 1; }
     100% { opacity: 0; }
+}
+
+@-webkit-keyframes fade-out {
+    0%   { opacity: 1; }
+    10% { opacity: 0; }
+    100% { opacity: 0; }
+}
+
+@-webkit-keyframes fade-in {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@-webkit-keyframes earthquake {
+    0%   { -webkit-transform: translate3d(0%, 0, 0); }
+    33%  { -webkit-transform: translate3d(-20%, 0, 0); }
+    66% { -webkit-transform: translate3d(10%, 0, 0); }
+    100% { -webkit-transform: translate3d(0%, 0, 0); }
 }
