@@ -3,8 +3,37 @@
 angular.module('petrusApp')
   .controller('DateCtrl', function ($scope) {
 
+
+    var active = true;
+
     // ScrollView sends no event for DateView? So quickfix Timeout
     setTimeout(function swExample() {
+
+
+      // Hack to disable SpinningWheel on all other pages, sorry no time for a good solution atm
+      var scrollView = $famous.find('#main-scroll-view')[0].renderNode,
+        scrollViewHandler = scrollView.sync;
+      var lastIndex = 0;
+      scrollViewHandler.on('start', function (event) {
+        var currentIndex = scrollView._node.index;
+        if (currentIndex === 1) {
+          if (!active) {
+            SpinningWheel.reAddEventListener();
+            active = true;
+          }
+        }
+        else {
+          if (active) {
+            SpinningWheel.removeEventListener();
+            active = false;
+          }
+        }
+
+        lastIndex = scrollView._node.index;
+
+      });
+
+
       var now = new Date();
       var days = {};
       var years = {};
@@ -38,5 +67,5 @@ angular.module('petrusApp')
       SpinningWheel.addSlot(years, 'right', now.getFullYear());
 
       SpinningWheel.open();
-    },1000);
+    }, 1000);
   });

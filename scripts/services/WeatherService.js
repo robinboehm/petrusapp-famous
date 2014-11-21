@@ -1,22 +1,27 @@
 angular.module('petrusApp')
-  .factory('weatherService', function(){
-    var weather = { locationName: '', weatherType: 0 };
+  .provider('weatherService', function () {
 
-    function send() {
-      $http.post('http://petrusapp.herokuapp.com/data/', {
-        timestamp: (new Date()).getTime(),
-        data: data
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+    var _serverUrl = 'http://localhost:9000';
 
-    return {
-      weather: weather,
-      weatherDate: weather.weatherDate,
-      weatherType: weather.weatherType,
-      locationName: weather.locationName,
-      send: send
-    }
+    this.setServerUrl = function (serverUrl) {
+      _serverUrl = serverUrl;
+    };
+
+    this.$get = function ($http) {
+      var weather = {location: '', weather: 0, date: ''};
+
+      function send(data) {
+        return $http.post(_serverUrl, data,
+          {
+            headers: {'Content-Type': 'application/json'}
+          });
+      }
+
+      return {
+        data: weather,
+        send: send
+      }
+    };
+
+
   });

@@ -1,0 +1,36 @@
+{
+  "name": "petrusapp",
+  "version": "0.0.1",
+  "description": "Send your wishes about the weather",
+  "dependencies": {
+    "gulp": "^3.8.2",
+    "gulp-sass": "^0.7.2",
+    "phonegap": "^3.5.0-0.20.4",
+      "karma": "0.12.0",
+      "karma-chrome-launcher": "0.1.2",
+      "karma-jasmine": "0.2.2",
+      "karma-ng-html2js-preprocessor": "0.1.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.2",
+    "gulp-sass": "^0.7.2"
+  },
+  "scripts": {
+    "test": "karma start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/symetics/petrusapp.git"
+  },
+  "keywords": [
+    "webapp",
+    "mobile",
+    "angularjs"
+  ],
+  "author": "Robin Boehm, Sascha Brink",
+  "license": "Copyright",
+  "bugs": {
+    "url": "https://github.com/symetics/petrusapp/issues"
+  },
+  "homepage": "https://github.com/symetics/petrusapp"
+}

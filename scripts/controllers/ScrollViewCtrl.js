@@ -5,10 +5,27 @@ angular.module('petrusApp')
   .controller('ScrollViewCtrl', function ($scope, $famous, weatherService, $window) {
 
 
+
+
     $window.$famous = $famous;
 
+    $scope.weather = weatherService.data;
+    $scope.result = {
+      data: []
+    };
 
-    $scope.weather = weatherService;
+
+    $scope.getWeatherFor = function (weather) {
+      var resultArray = $scope.result.data.filter(function (element) {
+        return element.weather == weather;
+      });
+
+      var returnValue = 0;
+      if(resultArray.length>0){
+        returnValue = resultArray[0].count;
+      }
+      return returnValue;
+    };
 
     var EventHandler = $famous['famous/core/EventHandler'];
     var Transitionable = $famous['famous/transitions/Transitionable'];

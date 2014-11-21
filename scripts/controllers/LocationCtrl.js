@@ -39,9 +39,9 @@ angular.module('petrusApp')
 
     $scope.keyClick = function (key, $event) {
       if (key === 'del') {
-        $scope.weather.locationName = $scope.weather.locationName.slice(0, -1);
-      } else if ($scope.weather.locationName.length < 20) {
-        $scope.weather.locationName += key.toUpperCase();
+        weatherService.data.location = weatherService.data.location.slice(0, -1);
+      } else if (weatherService.data.location.length < 20) {
+        weatherService.data.location += key.toUpperCase();
       }
     };
   });

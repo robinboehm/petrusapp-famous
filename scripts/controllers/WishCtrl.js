@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('petrusApp')
-  .controller('WishCtrl', function ($scope) {
+  .controller('WishCtrl', function ($scope,weatherService) {
 
-    $scope.temperature = 0;
+    weatherService.data.temperature = 20;
     var minHeight = 140;
     var maxHeight = 340;
     $scope.handleTouch = function (event) {
@@ -13,7 +13,7 @@ angular.module('petrusApp')
       var currentY = touch.clientY;
       var step = (maxHeight - minHeight) / 100;
       if (currentY < maxHeight && currentY > minHeight) {
-        $scope.temperature = ((maxHeight - currentY) / step) - 45;
+        $scope.weather.temperature = ((maxHeight - currentY) / step) - 45;
       }
 
     }

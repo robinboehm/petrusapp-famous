@@ -21,7 +21,7 @@
   <fa-scroll-view id="main-scroll-view" fa-pipe-from="enginePipe"
                   fa-options="options.mainScrollView">
 
-    
+
     <fa-view id="start" fa-pipe-to="enginePipe">
       <fa-modifier>
         <fa-image-surface fa-image-url="images/screen-start/cover.png" fa-size="[width,height]">
@@ -36,7 +36,7 @@
       </fa-modifier>
 
       <fa-modifier class="rotateMod" fa-origin="[.5, .5]" fa-translate="[-80,-156,1]">
-        <fa-image-surface fa-image-url="images/screen-date/clock-hand.png" fa-size="[50,50]">
+        <fa-image-surface fa-image-url="images/screen-date/clock-hand.png" fa-size="[50,50]" ng-click="check()">
         </fa-image-surface>
       </fa-modifier>
 
@@ -49,7 +49,7 @@
       </fa-animation>
 
       <fa-modifier fa-translate="[30,190,-1]">
-        <fa-surface fa-background-color="'orange'" fa-size="[250,215]">
+        <fa-surface fa-background-color="'white'" fa-size="[250,215]">
           <div id="spinningwheel"></div>
         </fa-surface>
       </fa-modifier>
@@ -66,8 +66,8 @@
 
       <fa-modifier fa-translate="[60,155,1]">
         <fa-surface>
-          <input class="input-location" type="text" ng-model="weather.locationName"
-                 ng-class="{smaller: weather.locationName.length > 15 }">
+          <input class="input-location" type="text" ng-model="weather.location"
+                 ng-class="{smaller: weather.location.length > 15 }">
         </fa-surface>
       </fa-modifier>
 
@@ -89,8 +89,8 @@
 
 
       <fa-modifier class="rotateDisk" fa-translate="[10,55,-1]">
-          <fa-surface fa-click="weather.weatherType = weather.weatherType + 1">
-            <div class="weather-disk" style="-webkit-transform: rotate({{weather.weatherType * (360 / 7) }}deg) translateZ(0)"></div>
+          <fa-surface fa-click="weather.weather = weather.weather + 1">
+            <div class="weather-disk" style="-webkit-transform: rotate({{weather.weather * (360 / 7) }}deg) translateZ(0)"></div>
           </fa-surface>
       </fa-modifier>
 
@@ -100,7 +100,7 @@
       </fa-modifier>
 
       <fa-modifier fa-translate="[240,170,1]">
-        <fa-surface fa-click="weather.weatherType = weather.weatherType + 1"
+        <fa-surface fa-click="weather.weather = weather.weather + 1"
                     fa-size="[80,80]">
         </fa-surface>
       </fa-modifier>
@@ -108,7 +108,7 @@
       <fa-modifier fa-translate="[130,160,1]">
         <fa-surface fa-size="[50,180]" fa-touchstart="handleTouch($event)" fa-touchmove="handleTouch($event)">
         </fa-surface>
-        <fa-modifier fa-translate="[0,-temperature*1.8+51*1.8,1]">
+        <fa-modifier fa-translate="[0,-weather.temperature*1.8+51*1.8,1]">
           <fa-surface fa-background-color="'black'" fa-size="[25,3]">
 
           </fa-surface>
@@ -149,7 +149,7 @@
       </fa-modifier>
     </fa-view>
 
-    <fa-view id="list" fa-pipe-to="enginePipe">
+    <fa-view id="list" fa-pipe-to="enginePipe" ng-controller="ListCtrl">
       <fa-modifier>
         <fa-image-surface fa-image-url="images/screen-list/cover.jpg" fa-size="[width,height]">
         </fa-image-surface>
@@ -157,47 +157,47 @@
 
       <fa-modifier fa-translate="[120,135]">
         <fa-surface fa-size="[261,307]">
-         <span>000</span>
+         <span>{{getWeatherFor(1)}}</span>
         </fa-surface>
       </fa-modifier>
 
 
       <fa-modifier fa-translate="[180,125]">
         <fa-surface fa-size="[261,307]">
-          <span>000</span>
+          <span>{{getWeatherFor(2)}}</span>
         </fa-surface>
       </fa-modifier>
 
       <fa-modifier fa-translate="[240,120]">
         <fa-surface fa-size="[261,307]">
-          <span>000</span>
+          <span>{{getWeatherFor(3)}}</span>
         </fa-surface>
       </fa-modifier>
 
 
       <fa-modifier fa-translate="[130,205]">
         <fa-surface fa-size="[261,307]">
-          <span>000</span>
+          <span>{{getWeatherFor(5)}}</span>
         </fa-surface>
       </fa-modifier>
 
       <fa-modifier fa-translate="[190,200]">
         <fa-surface fa-size="[261,307]">
-          <span>000</span>
+          <span>{{getWeatherFor(6)}}</span>
         </fa-surface>
       </fa-modifier>
 
 
       <fa-modifier fa-translate="[250,195]">
         <fa-surface fa-size="[261,307]">
-          <span>000</span>
+          <span>{{getWeatherFor(0)}}</span>
         </fa-surface>
       </fa-modifier>
 
 
       <fa-modifier fa-translate="[245,285]">
         <fa-surface fa-size="[261,307]">
-          <span>000</span>
+          <span>{{getWeatherFor(4)}}</span>
         </fa-surface>
       </fa-modifier>
 
@@ -227,6 +227,7 @@
 <script src="scripts/controllers/SendCtrl.js"></script>
 <script src="scripts/controllers/DateCtrl.js"></script>
 <script src="scripts/controllers/WishCtrl.js"></script>
+<script src="scripts/controllers/ListCtrl.js"></script>
 <script src="scripts/services/WeatherService.js"></script>
 <script src="scripts/directives/hebelDirective.js"></script>
 
