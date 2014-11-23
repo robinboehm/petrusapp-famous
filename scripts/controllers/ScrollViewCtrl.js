@@ -6,6 +6,10 @@ angular.module('petrusApp')
 
 
 
+    $scope.reload = function(){
+      $window.location.reload();
+    };
+
     $scope.activeViews = {
       listView: false
     };
