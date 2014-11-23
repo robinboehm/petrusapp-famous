@@ -32,11 +32,11 @@ angular.module('petrusApp')
         $scope.animation.earthquake = false;
         $scope.animation.fadeOut = false;
         $scope.animation.fadeIn = true;
-
-
+        
         $timeout(function () {
           // Go To Last Page
-          $famous.find('fa-scroll-view')[0].renderNode.goToNextPage();
+          //$famous.find('fa-scroll-view')[0].renderNode.goToNextPage();
+          $scope.activeViews.listView = true;
         }, 3000);
 
       }, 5000);

@@ -18,7 +18,7 @@
 
 <fa-app style="width: 320px; height: 568px;" ng-class="{ 'earthquake' : animation.earthquake}">
 
-  <fa-scroll-view id="main-scroll-view" fa-pipe-from="enginePipe"
+  <fa-scroll-view ng-if="!activeViews.listView" id="main-scroll-view" fa-pipe-from="enginePipe"
                   fa-options="options.mainScrollView">
 
 
@@ -149,65 +149,67 @@
       </fa-modifier>
     </fa-view>
 
-    <fa-view id="list" fa-pipe-to="enginePipe" ng-controller="ListCtrl">
-      <fa-modifier>
-        <fa-image-surface fa-image-url="images/screen-list/cover.jpg" fa-size="[width,height]">
-        </fa-image-surface>
-      </fa-modifier>
-
-      <fa-modifier fa-translate="[120,135]">
-        <fa-surface fa-size="[261,307]">
-         <span>{{getWeatherFor(1)}}</span>
-        </fa-surface>
-      </fa-modifier>
-
-
-      <fa-modifier fa-translate="[180,125]">
-        <fa-surface fa-size="[261,307]">
-          <span>{{getWeatherFor(2)}}</span>
-        </fa-surface>
-      </fa-modifier>
-
-      <fa-modifier fa-translate="[240,120]">
-        <fa-surface fa-size="[261,307]">
-          <span>{{getWeatherFor(3)}}</span>
-        </fa-surface>
-      </fa-modifier>
-
-
-      <fa-modifier fa-translate="[130,205]">
-        <fa-surface fa-size="[261,307]">
-          <span>{{getWeatherFor(5)}}</span>
-        </fa-surface>
-      </fa-modifier>
-
-      <fa-modifier fa-translate="[190,200]">
-        <fa-surface fa-size="[261,307]">
-          <span>{{getWeatherFor(6)}}</span>
-        </fa-surface>
-      </fa-modifier>
-
-
-      <fa-modifier fa-translate="[250,195]">
-        <fa-surface fa-size="[261,307]">
-          <span>{{getWeatherFor(0)}}</span>
-        </fa-surface>
-      </fa-modifier>
-
-
-      <fa-modifier fa-translate="[245,285]">
-        <fa-surface fa-size="[261,307]">
-          <span>{{getWeatherFor(4)}}</span>
-        </fa-surface>
-      </fa-modifier>
-
-
-
-
-
-    </fa-view>
-
   </fa-scroll-view>
+
+
+  <fa-view ng-if="activeViews.listView" id="list" ng-controller="ListCtrl">
+    <fa-modifier>
+      <fa-image-surface fa-image-url="images/screen-list/cover.jpg" fa-size="[width,height]">
+      </fa-image-surface>
+    </fa-modifier>
+
+    <fa-modifier fa-translate="[120,135]">
+      <fa-surface fa-size="[261,307]">
+        <span>{{getWeatherFor(1)}}</span>
+      </fa-surface>
+    </fa-modifier>
+
+
+    <fa-modifier fa-translate="[180,125]">
+      <fa-surface fa-size="[261,307]">
+        <span>{{getWeatherFor(2)}}</span>
+      </fa-surface>
+    </fa-modifier>
+
+    <fa-modifier fa-translate="[240,120]">
+      <fa-surface fa-size="[261,307]">
+        <span>{{getWeatherFor(3)}}</span>
+      </fa-surface>
+    </fa-modifier>
+
+
+    <fa-modifier fa-translate="[130,205]">
+      <fa-surface fa-size="[261,307]">
+        <span>{{getWeatherFor(5)}}</span>
+      </fa-surface>
+    </fa-modifier>
+
+    <fa-modifier fa-translate="[190,200]">
+      <fa-surface fa-size="[261,307]">
+        <span>{{getWeatherFor(6)}}</span>
+      </fa-surface>
+    </fa-modifier>
+
+
+    <fa-modifier fa-translate="[250,195]">
+      <fa-surface fa-size="[261,307]">
+        <span>{{getWeatherFor(0)}}</span>
+      </fa-surface>
+    </fa-modifier>
+
+
+    <fa-modifier fa-translate="[245,285]">
+      <fa-surface fa-size="[261,307]">
+        <span>{{getWeatherFor(4)}}</span>
+      </fa-surface>
+    </fa-modifier>
+
+
+
+
+
+  </fa-view>
+
 
 </fa-app>
 

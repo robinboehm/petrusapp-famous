@@ -6,6 +6,9 @@ angular.module('petrusApp')
 
 
 
+    $scope.activeViews = {
+      listView: false
+    };
 
     $window.$famous = $famous;
 
