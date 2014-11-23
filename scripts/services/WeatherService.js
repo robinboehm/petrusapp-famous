@@ -1,7 +1,7 @@
 angular.module('petrusApp')
   .provider('weatherService', function () {
 
-    var _serverUrl = 'http://localhost:9000';
+    var _serverUrl = 'https://petrusapp-backend.herokuapp.com/';
 
     this.setServerUrl = function (serverUrl) {
       _serverUrl = serverUrl;
