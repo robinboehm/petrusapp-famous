@@ -1,0 +1,14 @@
+{
+  "name": "Spinning-Wheel",
+  "homepage": "https://github.com/mcfedr/Spinning-Wheel",
+  "_release": "71e3f84578",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "71e3f84578aa81d6bc5e922f27923e0fcd7bf221"
+  },
+  "_source": "git://github.com/mcfedr/Spinning-Wheel.git",
+  "_target": "*",
+  "_originalSource": "mcfedr/Spinning-Wheel",
+  "_direct": true
+}
