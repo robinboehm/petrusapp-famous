@@ -16,7 +16,7 @@
 </head>
 <body ng-controller="ScrollViewCtrl" ng-class="{ 'fade-out' : animation.fadeOut, 'fade-in' : animation.fadeIn }">
 
-<fa-app style="width: 320px; height: 568px;" ng-class="{ 'earthquake' : animation.earthquake}">
+<fa-app style="width: {{width}}px; height: {{height}}px;" ng-class="{ 'earthquake' : animation.earthquake}">
 
   <fa-scroll-view ng-if="!activeViews.listView" id="main-scroll-view" fa-pipe-from="enginePipe"
                   fa-options="options.mainScrollView">
@@ -35,8 +35,8 @@
         </fa-image-surface>
       </fa-modifier>
 
-      <fa-modifier class="rotateMod" fa-origin="[.5, .5]" fa-translate="[-80,-156,1]">
-        <fa-image-surface fa-image-url="images/screen-date/clock-hand.png" fa-size="[50,50]" ng-click="check()">
+      <fa-modifier class="rotateMod" fa-origin="[.5, .5]" fa-translate="[transClockHandX,transClockHandY,1]">
+        <fa-image-surface fa-image-url="images/screen-date/clock-hand.png" fa-size="[sizeClockHand,sizeClockHand]" ng-click="check()">
         </fa-image-surface>
       </fa-modifier>
 
@@ -48,8 +48,8 @@
                  curve="linear"></animate>
       </fa-animation>
 
-      <fa-modifier fa-translate="[30,190,-1]">
-        <fa-surface fa-background-color="'white'" fa-size="[250,215]">
+      <fa-modifier fa-translate="[transSpinningWheelX, transSpinningWheelY, -1]">
+        <fa-surface fa-background-color="'white'" fa-size="[widthSpinningWheel,heightSpinningWheel]">
           <div id="spinningwheel"></div>
         </fa-surface>
       </fa-modifier>
@@ -64,15 +64,15 @@
       </fa-modifier>
 
 
-      <fa-modifier fa-translate="[60,155,1]">
+      <fa-modifier fa-translate="[transInputX,transInputY,1]">
         <fa-surface>
           <input class="input-location" type="text" ng-model="weather.location"
                  ng-class="{smaller: weather.location.length > 15 }">
         </fa-surface>
       </fa-modifier>
 
-      <fa-modifier fa-translate="[20,35,1]">
-        <fa-surface fa-size="[180,92]">
+      <fa-modifier fa-translate="[transBellX,transBellY,1]">
+        <fa-surface fa-size="[widthBell,heightBell]">
           <div class="bell active"></div>
         </fa-surface>
       </fa-modifier>
@@ -88,9 +88,9 @@
     <fa-view id="wish" fa-pipe-to="enginePipe" ng-controller="WishCtrl">
 
 
-      <fa-modifier class="rotateDisk" fa-translate="[10,55,-1]">
+      <fa-modifier class="rotateDisk" fa-translate="[transDiscX,transDiscY,-1]">
           <fa-surface fa-click="weather.weather = weather.weather + 1">
-            <div class="weather-disk" style="-webkit-transform: rotate({{weather.weather * (360 / 7) }}deg) translateZ(0)"></div>
+            <div class="weather-disk" style="-webkit-transform: rotate({{weather.weather * (360 / 7) }}deg) translateZ(0);width:{{sizeDisc}}pt;height:{{sizeDisc}}pt;"></div>
           </fa-surface>
       </fa-modifier>
 
@@ -99,17 +99,17 @@
         </fa-image-surface>
       </fa-modifier>
 
-      <fa-modifier fa-translate="[240,170,1]">
+      <fa-modifier fa-translate="[transPushX,transPushY,1]">
         <fa-surface fa-click="weather.weather = weather.weather + 1"
-                    fa-size="[80,80]">
+                    fa-size="[sizePush,sizePush]">
         </fa-surface>
       </fa-modifier>
 
-      <fa-modifier fa-translate="[130,160,1]">
-        <fa-surface fa-size="[50,180]" fa-touchstart="handleTouch($event)" fa-touchmove="handleTouch($event)">
+      <fa-modifier fa-translate="[transMarkerAreaX,transMarkerAreaY,1]">
+        <fa-surface fa-size="[widthMarkerArea,heightMarkerArea]" fa-touchstart="handleTouch($event)" fa-touchmove="handleTouch($event)">
         </fa-surface>
-        <fa-modifier fa-translate="[0,-weather.temperature*1.8+51*1.8,1]">
-          <fa-surface fa-background-color="'black'" fa-size="[25,3]">
+        <fa-modifier fa-translate="[0,scaledTemperature,1]">
+          <fa-surface fa-background-color="'black'" fa-size="[widthMarker,heightMarker]">
 
           </fa-surface>
         </fa-modifier>
@@ -128,15 +128,16 @@
 
       <fa-modifier fa-translate="options.translate">
         <fa-surface fa-size="options.size" fa-click="onClick()">
-          <hebel min-height="74" options="options" style="height:{{options.size[1]}}px"
+          <!--74-->
+          <hebel min-height="74" options="options" style="width:{{options.size[0]}}px;height:{{options.size[1]}}px;"
                  on-submit="submit()"></hebel>
         </fa-surface>
       </fa-modifier>
 
 
-      <fa-modifier fa-translate="[76,360]">
-        <fa-surface fa-size="[261,307]">
-          <div class="bolt" ng-class="{active:active}"></div>
+      <fa-modifier fa-translate="[transBoltX,transBoltY]">
+        <fa-surface fa-size="[widthBolt,heightBolt]">
+          <div class="bolt" ng-class="{active:active}" style="width:{{widthBolt}}px;height:{{heightBolt}}px"></div>
         </fa-surface>
       </fa-modifier>
     </fa-view>
@@ -158,55 +159,55 @@
       </fa-image-surface>
     </fa-modifier>
 
-    <fa-modifier fa-translate="[120,135]">
-      <fa-surface fa-size="[261,307]">
+    <fa-modifier fa-translate="[transX1,transY1]">
+      <fa-surface fa-size="[widthResult,heightResult]">
         <span>{{getWeatherFor(1)}}</span>
       </fa-surface>
     </fa-modifier>
 
 
-    <fa-modifier fa-translate="[180,125]">
-      <fa-surface fa-size="[261,307]">
+    <fa-modifier fa-translate="[transX2,transY2]">
+      <fa-surface fa-size="[widthResult,heightResult]">
         <span>{{getWeatherFor(2)}}</span>
       </fa-surface>
     </fa-modifier>
 
-    <fa-modifier fa-translate="[240,120]">
-      <fa-surface fa-size="[261,307]">
+    <fa-modifier fa-translate="[transX3,transY3]">
+      <fa-surface fa-size="[widthResult,heightResult]">
         <span>{{getWeatherFor(3)}}</span>
       </fa-surface>
     </fa-modifier>
 
 
-    <fa-modifier fa-translate="[130,205]">
-      <fa-surface fa-size="[261,307]">
+    <fa-modifier fa-translate="[transX5,transY5]">
+      <fa-surface fa-size="[widthResult,heightResult]">
         <span>{{getWeatherFor(5)}}</span>
       </fa-surface>
     </fa-modifier>
 
-    <fa-modifier fa-translate="[190,200]">
-      <fa-surface fa-size="[261,307]">
+    <fa-modifier fa-translate="[transX6,transY6]">
+      <fa-surface fa-size="[widthResult,heightResult]">
         <span>{{getWeatherFor(6)}}</span>
       </fa-surface>
     </fa-modifier>
 
 
-    <fa-modifier fa-translate="[250,195]">
-      <fa-surface fa-size="[261,307]">
+    <fa-modifier fa-translate="[transX0,transY0]">
+      <fa-surface fa-size="[widthResult,heightResult]">
         <span>{{getWeatherFor(0)}}</span>
       </fa-surface>
     </fa-modifier>
 
 
-    <fa-modifier fa-translate="[245,285]">
-      <fa-surface fa-size="[261,307]">
+    <fa-modifier fa-translate="[transX4,transY4]">
+      <fa-surface fa-size="[widthResult,heightResult]">
         <span>{{getWeatherFor(4)}}</span>
       </fa-surface>
     </fa-modifier>
 
 
-    <fa-modifier fa-translate="[245,485]">
-      <fa-image-surface fa-click="reload()" fa-image-url="images/weiter-pfeil.png" fa-size="[66,68]">
+    <fa-modifier fa-translate="[transReloadX,transReloadY]">
+      <fa-image-surface fa-click="reload()" fa-image-url="images/weiter-pfeil.png" fa-size="[widthPfeil,heightPfeil]">
       </fa-image-surface>
     </fa-modifier>
 
@@ -235,6 +236,7 @@
 <script src="scripts/controllers/WishCtrl.js"></script>
 <script src="scripts/controllers/ListCtrl.js"></script>
 <script src="scripts/services/WeatherService.js"></script>
+<script src="scripts/services/DeviceScale.js"></script>
 <script src="scripts/directives/hebelDirective.js"></script>
 
 </body>

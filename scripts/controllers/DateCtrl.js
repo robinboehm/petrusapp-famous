@@ -1,10 +1,20 @@
 'use strict';
 
 angular.module('petrusApp')
-  .controller('DateCtrl', function ($scope) {
+  .controller('DateCtrl', function ($scope, DeviceScale) {
 
 
     var active = true;
+
+    // scaling GUI elements
+    $scope.transClockHandX = DeviceScale.toDevice(-80);
+    $scope.transClockHandY = DeviceScale.toDevice(-156);
+    $scope.sizeClockHand = DeviceScale.toDevice(50);
+
+    $scope.transSpinningWheelX = DeviceScale.toDevice(30);
+    $scope.transSpinningWheelY = DeviceScale.toDevice(190);
+    $scope.widthSpinningWheel = DeviceScale.toDevice(250);
+    $scope.heightSpinningWheel = DeviceScale.toDevice(215);
 
     // ScrollView sends no event for DateView? So quickfix Timeout
     setTimeout(function swExample() {

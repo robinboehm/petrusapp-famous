@@ -61,7 +61,7 @@ angular.module('petrusApp')
           var top = startTop - (startCoords.y - coords.y);
           var height = startHeight + (startCoords.y - coords.y);
           if (top > minHeight && top < maxHeight) {
-            $rootScope.$apply(function(){
+            $rootScope.$apply(function () {
               scope.options.translate[1] = top;
               scope.options.size[1] = height;
             });

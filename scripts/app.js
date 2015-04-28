@@ -1,3 +1,3 @@
 "use strict";
 
-angular.module('petrusApp', ['famous.angular','ajoslin.scrolly']);
+angular.module('petrusApp', ['famous.angular', 'ajoslin.scrolly']);

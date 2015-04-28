@@ -1,12 +1,8 @@
 hebel {
     background-image: url("../images/screen-send/hebel.png");
-    width: 356pt;
-    height: 230px;
-    /* z-index: 1; */
     display: block;
-    background-size: 40%;
+    background-size: 100%;
     background-repeat: no-repeat;
-    /*transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;*/
 }
 
 hebel.active {
@@ -17,10 +13,8 @@ hebel.active {
 
 .bolt {
     background-image: url("../images/screen-send/bolt.png");
-    width: 261pt;
-    height: 307pt;
     display: block;
-    background-size: 40%;
+    background-size: 100%;
     background-repeat: no-repeat;
     opacity: 0;
 }

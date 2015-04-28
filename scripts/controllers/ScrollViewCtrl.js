@@ -2,11 +2,10 @@
 
 
 angular.module('petrusApp')
-  .controller('ScrollViewCtrl', function ($scope, $famous, weatherService, $window) {
+  .controller('ScrollViewCtrl', function ($scope, $famous, weatherService, $window, DeviceScale) {
 
 
-
-    $scope.reload = function(){
+    $scope.reload = function () {
       $window.location.reload();
     };
 
@@ -28,7 +27,7 @@ angular.module('petrusApp')
       });
 
       var returnValue = 0;
-      if(resultArray.length>0){
+      if (resultArray.length > 0) {
         returnValue = resultArray[0].count;
       }
       return returnValue;
@@ -40,8 +39,13 @@ angular.module('petrusApp')
     $scope.enginePipe = new EventHandler();
     Engine.pipe($scope.enginePipe);
 
-    $scope.width = 320;
-    $scope.height = 568;
+    DeviceScale.setDeviceScreen([$window.screen.width, $window.screen.height]);
+    DeviceScale.setVirtualScreen([320, 568]);
+
+    $scope.width = DeviceScale.toDevice(320);
+    $scope.height = DeviceScale.toDevice(568);
+
+    console.log($scope.width + '/' + $scope.height);
 
     $scope.animation = {
       earthquake: false

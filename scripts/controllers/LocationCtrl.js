@@ -1,7 +1,16 @@
 'use strict';
 
 angular.module('petrusApp')
-  .controller('LocationCtrl', function ($scope, weatherService) {
+  .controller('LocationCtrl', function ($scope, weatherService, DeviceScale) {
+    console.log('LocationCtrl Scaling : ' + DeviceScale.toDevice(1));
+
+    $scope.transInputX = DeviceScale.toDevice(60);
+    $scope.transInputY = DeviceScale.toDevice(155);
+
+    $scope.transBellX = DeviceScale.toDevice(20);
+    $scope.transBellY = DeviceScale.toDevice(35);
+    $scope.widthBell = DeviceScale.toDevice(180);
+    $scope.heightBell = DeviceScale.toDevice(92);
 
     $scope.keys = [
       {key: 'q', top: 296, left: 17, width: 33, height: 46, bgLeft: 0, bgTop: 0},
@@ -36,6 +45,14 @@ angular.module('petrusApp')
       {key: 'del', top: 402, left: 278, width: 42, height: 49, bgLeft: -100, bgTop: -200}
     ];
 
+    angular.forEach($scope.keys, function (key) {
+      key.top = DeviceScale.toDevice(key.top);
+      key.left = DeviceScale.toDevice(key.left);
+      key.width = DeviceScale.toDevice(key.width);
+      key.height = DeviceScale.toDevice(key.height);
+      key.bgLeft = DeviceScale.toDevice(key.bgLeft);
+      key.bgTop = DeviceScale.toDevice(key.bgTop);
+    });
 
     $scope.keyClick = function (key, $event) {
       if (key === 'del') {

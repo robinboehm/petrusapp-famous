@@ -1,12 +1,19 @@
 'use strict';
 
 angular.module('petrusApp')
-  .controller('SendCtrl', function ($scope, $timeout, weatherService) {
+  .controller('SendCtrl', function ($scope, $timeout, weatherService, DeviceScale) {
+
+    console.log('SendCtrl Scaling : ' + DeviceScale.toDevice(1));
 
     $scope.options = {
-      translate: [75, 80],
-      size: [180, 225]
+      translate: [DeviceScale.toDevice(75), DeviceScale.toDevice(80)],
+      size: [DeviceScale.toDevice(184), DeviceScale.toDevice(227)]
     };
+
+    $scope.transBoltX = DeviceScale.toDevice(76);
+    $scope.transBoltY = DeviceScale.toDevice(360);
+    $scope.widthBolt = DeviceScale.toDevice(134);
+    $scope.heightBolt = DeviceScale.toDevice(158);
 
     $scope.submit = function () {
       // Activate Animations
@@ -32,7 +39,7 @@ angular.module('petrusApp')
         $scope.animation.earthquake = false;
         $scope.animation.fadeOut = false;
         $scope.animation.fadeIn = true;
-        
+
         $timeout(function () {
           // Go To Last Page
           //$famous.find('fa-scroll-view')[0].renderNode.goToNextPage();

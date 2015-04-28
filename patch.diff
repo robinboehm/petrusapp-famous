@@ -1,0 +1,1116 @@
+From d6eda79245631c4da654f0cd9b1f04ddf5f02ae0 Mon Sep 17 00:00:00 2001
+From: Sammas <sam-mail@gmx.de>
+Date: Sun, 26 Apr 2015 20:09:43 +0200
+Subject: [PATCH] added DeviceScale to scale from physical to virtual device
+ coordinates
+
+---
+ bower.json                                  |   3 +
+ bower_components/Spinning-Wheel/.bower.json |  11 +--
+ css/send.css                                |  10 +-
+ index.html                                  |  74 +++++++-------
+ karma.conf.js                               |  63 ++++++++++++
+ package.json                                |  14 +--
+ scripts/controllers/DateCtrl.js             | 146 +++++++++++++++-------------
+ scripts/controllers/ListCtrl.js             |  39 +++++++-
+ scripts/controllers/LocationCtrl.js         |  19 +++-
+ scripts/controllers/ScrollViewCtrl.js       |  82 ++++++++--------
+ scripts/controllers/SendCtrl.js             |  91 +++++++++--------
+ scripts/controllers/WishCtrl.js             |  76 +++++++++++----
+ scripts/services/DeviceScale.js             |  52 ++++++++++
+ test/unit/DeviceScaleSpec.js                | 130 +++++++++++++++++++++++++
+ 14 files changed, 583 insertions(+), 227 deletions(-)
+ create mode 100644 karma.conf.js
+ create mode 100644 scripts/services/DeviceScale.js
+ create mode 100644 test/unit/DeviceScaleSpec.js
+
+diff --git a/bower.json b/bower.json
+index 17594fb..33defd2 100644
+--- a/bower.json
++++ b/bower.json
+@@ -7,5 +7,8 @@
+     "angular-touch": "1.2.21",
+     "famous-angular": "0.5.0",
+     "Spinning-Wheel": "robinboehm/Spinning-Wheel"
++  },
++  "devDependencies": {
++    "angular-mocks": "~1.3.15"
+   }
+ }
+diff --git a/bower_components/Spinning-Wheel/.bower.json b/bower_components/Spinning-Wheel/.bower.json
+index eedcf53..101faed 100644
+--- a/bower_components/Spinning-Wheel/.bower.json
++++ b/bower_components/Spinning-Wheel/.bower.json
+@@ -1,14 +1,13 @@
+ {
+   "name": "Spinning-Wheel",
+-  "homepage": "https://github.com/mcfedr/Spinning-Wheel",
+-  "_release": "71e3f84578",
++  "homepage": "https://github.com/robinboehm/Spinning-Wheel",
++  "_release": "7ce60830df",
+   "_resolution": {
+     "type": "branch",
+     "branch": "master",
+-    "commit": "71e3f84578aa81d6bc5e922f27923e0fcd7bf221"
++    "commit": "7ce60830df8b4b18e68ad0a6cc2e745b90996ca8"
+   },
+-  "_source": "git://github.com/mcfedr/Spinning-Wheel.git",
++  "_source": "git://github.com/robinboehm/Spinning-Wheel.git",
+   "_target": "*",
+-  "_originalSource": "mcfedr/Spinning-Wheel",
+-  "_direct": true
++  "_originalSource": "robinboehm/Spinning-Wheel"
+ }
+\ No newline at end of file
+diff --git a/css/send.css b/css/send.css
+index 554df89..47681ee 100644
+--- a/css/send.css
++++ b/css/send.css
+@@ -1,12 +1,8 @@
+ hebel {
+     background-image: url("../images/screen-send/hebel.png");
+-    width: 356pt;
+-    height: 230px;
+-    /* z-index: 1; */
+     display: block;
+-    background-size: 40%;
++    background-size: 100%;
+     background-repeat: no-repeat;
+-    /*transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;*/
+ }
+ 
+ hebel.active {
+@@ -17,10 +13,8 @@ hebel.active {
+ 
+ .bolt {
+     background-image: url("../images/screen-send/bolt.png");
+-    width: 261pt;
+-    height: 307pt;
+     display: block;
+-    background-size: 40%;
++    background-size: 100%;
+     background-repeat: no-repeat;
+     opacity: 0;
+ }
+diff --git a/index.html b/index.html
+index 77a7285..5c0bee6 100644
+--- a/index.html
++++ b/index.html
+@@ -16,7 +16,7 @@
+ </head>
+ <body ng-controller="ScrollViewCtrl" ng-class="{ 'fade-out' : animation.fadeOut, 'fade-in' : animation.fadeIn }">
+ 
+-<fa-app style="width: 320px; height: 568px;" ng-class="{ 'earthquake' : animation.earthquake}">
++<fa-app style="width: {{width}}px; height: {{height}}px;" ng-class="{ 'earthquake' : animation.earthquake}">
+ 
+   <fa-scroll-view ng-if="!activeViews.listView" id="main-scroll-view" fa-pipe-from="enginePipe"
+                   fa-options="options.mainScrollView">
+@@ -35,8 +35,8 @@
+         </fa-image-surface>
+       </fa-modifier>
+ 
+-      <fa-modifier class="rotateMod" fa-origin="[.5, .5]" fa-translate="[-80,-156,1]">
+-        <fa-image-surface fa-image-url="images/screen-date/clock-hand.png" fa-size="[50,50]" ng-click="check()">
++      <fa-modifier class="rotateMod" fa-origin="[.5, .5]" fa-translate="[transClockHandX,transClockHandY,1]">
++        <fa-image-surface fa-image-url="images/screen-date/clock-hand.png" fa-size="[sizeClockHand,sizeClockHand]" ng-click="check()">
+         </fa-image-surface>
+       </fa-modifier>
+ 
+@@ -48,8 +48,8 @@
+                  curve="linear"></animate>
+       </fa-animation>
+ 
+-      <fa-modifier fa-translate="[30,190,-1]">
+-        <fa-surface fa-background-color="'white'" fa-size="[250,215]">
++      <fa-modifier fa-translate="[transSpinningWheelX, transSpinningWheelY, -1]">
++        <fa-surface fa-background-color="'white'" fa-size="[widthSpinningWheel,heightSpinningWheel]">
+           <div id="spinningwheel"></div>
+         </fa-surface>
+       </fa-modifier>
+@@ -64,15 +64,15 @@
+       </fa-modifier>
+ 
+ 
+-      <fa-modifier fa-translate="[60,155,1]">
++      <fa-modifier fa-translate="[transInputX,transInputY,1]">
+         <fa-surface>
+           <input class="input-location" type="text" ng-model="weather.location"
+                  ng-class="{smaller: weather.location.length > 15 }">
+         </fa-surface>
+       </fa-modifier>
+ 
+-      <fa-modifier fa-translate="[20,35,1]">
+-        <fa-surface fa-size="[180,92]">
++      <fa-modifier fa-translate="[transBellX,transBellY,1]">
++        <fa-surface fa-size="[widthBell,heightBell]">
+           <div class="bell active"></div>
+         </fa-surface>
+       </fa-modifier>
+@@ -88,9 +88,9 @@
+     <fa-view id="wish" fa-pipe-to="enginePipe" ng-controller="WishCtrl">
+ 
+ 
+-      <fa-modifier class="rotateDisk" fa-translate="[10,55,-1]">
++      <fa-modifier class="rotateDisk" fa-translate="[transDiscX,transDiscY,-1]">
+           <fa-surface fa-click="weather.weather = weather.weather + 1">
+-            <div class="weather-disk" style="-webkit-transform: rotate({{weather.weather * (360 / 7) }}deg) translateZ(0)"></div>
++            <div class="weather-disk" style="-webkit-transform: rotate({{weather.weather * (360 / 7) }}deg) translateZ(0);width:{{sizeDisc}}pt;height:{{sizeDisc}}pt;"></div>
+           </fa-surface>
+       </fa-modifier>
+ 
+@@ -99,17 +99,17 @@
+         </fa-image-surface>
+       </fa-modifier>
+ 
+-      <fa-modifier fa-translate="[240,170,1]">
++      <fa-modifier fa-translate="[transPushX,transPushY,1]">
+         <fa-surface fa-click="weather.weather = weather.weather + 1"
+-                    fa-size="[80,80]">
++                    fa-size="[sizePush,sizePush]">
+         </fa-surface>
+       </fa-modifier>
+ 
+-      <fa-modifier fa-translate="[130,160,1]">
+-        <fa-surface fa-size="[50,180]" fa-touchstart="handleTouch($event)" fa-touchmove="handleTouch($event)">
++      <fa-modifier fa-translate="[transMarkerAreaX,transMarkerAreaY,1]">
++        <fa-surface fa-size="[widthMarkerArea,heightMarkerArea]" fa-touchstart="handleTouch($event)" fa-touchmove="handleTouch($event)">
+         </fa-surface>
+-        <fa-modifier fa-translate="[0,-weather.temperature*1.8+51*1.8,1]">
+-          <fa-surface fa-background-color="'black'" fa-size="[25,3]">
++        <fa-modifier fa-translate="[0,scaledTemperature,1]">
++          <fa-surface fa-background-color="'black'" fa-size="[widthMarker,heightMarker]">
+ 
+           </fa-surface>
+         </fa-modifier>
+@@ -128,15 +128,16 @@
+ 
+       <fa-modifier fa-translate="options.translate">
+         <fa-surface fa-size="options.size" fa-click="onClick()">
+-          <hebel min-height="74" options="options" style="height:{{options.size[1]}}px"
++          <!--74-->
++          <hebel min-height="74" options="options" style="width:{{options.size[0]}}px;height:{{options.size[1]}}px;"
+                  on-submit="submit()"></hebel>
+         </fa-surface>
+       </fa-modifier>
+ 
+ 
+-      <fa-modifier fa-translate="[76,360]">
+-        <fa-surface fa-size="[261,307]">
+-          <div class="bolt" ng-class="{active:active}"></div>
++      <fa-modifier fa-translate="[transBoltX,transBoltY]">
++        <fa-surface fa-size="[widthBolt,heightBolt]">
++          <div class="bolt" ng-class="{active:active}" style="width:{{widthBolt}}px;height:{{heightBolt}}px"></div>
+         </fa-surface>
+       </fa-modifier>
+     </fa-view>
+@@ -158,55 +159,55 @@
+       </fa-image-surface>
+     </fa-modifier>
+ 
+-    <fa-modifier fa-translate="[120,135]">
+-      <fa-surface fa-size="[261,307]">
++    <fa-modifier fa-translate="[transX1,transY1]">
++      <fa-surface fa-size="[widthResult,heightResult]">
+         <span>{{getWeatherFor(1)}}</span>
+       </fa-surface>
+     </fa-modifier>
+ 
+ 
+-    <fa-modifier fa-translate="[180,125]">
+-      <fa-surface fa-size="[261,307]">
++    <fa-modifier fa-translate="[transX2,transY2]">
++      <fa-surface fa-size="[widthResult,heightResult]">
+         <span>{{getWeatherFor(2)}}</span>
+       </fa-surface>
+     </fa-modifier>
+ 
+-    <fa-modifier fa-translate="[240,120]">
+-      <fa-surface fa-size="[261,307]">
++    <fa-modifier fa-translate="[transX3,transY3]">
++      <fa-surface fa-size="[widthResult,heightResult]">
+         <span>{{getWeatherFor(3)}}</span>
+       </fa-surface>
+     </fa-modifier>
+ 
+ 
+-    <fa-modifier fa-translate="[130,205]">
+-      <fa-surface fa-size="[261,307]">
++    <fa-modifier fa-translate="[transX5,transY5]">
++      <fa-surface fa-size="[widthResult,heightResult]">
+         <span>{{getWeatherFor(5)}}</span>
+       </fa-surface>
+     </fa-modifier>
+ 
+-    <fa-modifier fa-translate="[190,200]">
+-      <fa-surface fa-size="[261,307]">
++    <fa-modifier fa-translate="[transX6,transY6]">
++      <fa-surface fa-size="[widthResult,heightResult]">
+         <span>{{getWeatherFor(6)}}</span>
+       </fa-surface>
+     </fa-modifier>
+ 
+ 
+-    <fa-modifier fa-translate="[250,195]">
+-      <fa-surface fa-size="[261,307]">
++    <fa-modifier fa-translate="[transX0,transY0]">
++      <fa-surface fa-size="[widthResult,heightResult]">
+         <span>{{getWeatherFor(0)}}</span>
+       </fa-surface>
+     </fa-modifier>
+ 
+ 
+-    <fa-modifier fa-translate="[245,285]">
+-      <fa-surface fa-size="[261,307]">
++    <fa-modifier fa-translate="[transX4,transY4]">
++      <fa-surface fa-size="[widthResult,heightResult]">
+         <span>{{getWeatherFor(4)}}</span>
+       </fa-surface>
+     </fa-modifier>
+ 
+ 
+-    <fa-modifier fa-translate="[245,485]">
+-      <fa-image-surface fa-click="reload()" fa-image-url="images/weiter-pfeil.png" fa-size="[66,68]">
++    <fa-modifier fa-translate="[transReloadX,transReloadY]">
++      <fa-image-surface fa-click="reload()" fa-image-url="images/weiter-pfeil.png" fa-size="[widthPfeil,heightPfeil]">
+       </fa-image-surface>
+     </fa-modifier>
+ 
+@@ -235,6 +236,7 @@
+ <script src="scripts/controllers/WishCtrl.js"></script>
+ <script src="scripts/controllers/ListCtrl.js"></script>
+ <script src="scripts/services/WeatherService.js"></script>
++<script src="scripts/services/DeviceScale.js"></script>
+ <script src="scripts/directives/hebelDirective.js"></script>
+ 
+ </body>
+diff --git a/karma.conf.js b/karma.conf.js
+new file mode 100644
+index 0000000..45e15bc
+--- /dev/null
++++ b/karma.conf.js
+@@ -0,0 +1,63 @@
++// Karma configuration
++// Generated on Sun Apr 05 2015 12:52:25 GMT+0200 (Mitteleuropäische Sommerzeit)
++
++module.exports = function (config) {
++    config.set({
++
++        // base path that will be used to resolve all patterns (eg. files, exclude)
++        basePath: '',
++
++
++        // frameworks to use
++        // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
++        frameworks: ['jasmine'],
++
++
++        // list of files / patterns to load in the browser
++        files: [
++            'bower_components/angular/angular.js',
++            'bower_components/angular-mocks/angular-mocks.js',
++            'bower_components/angular-touch/angular-touch.js',
++            'bower_components/angular-scrolly/angular-scrolly.js',
++            'vendor/famous-global/famous-global.js',
++            'bower_components/famous-angular/dist/famous-angular.js',
++            'bower_components/Spinning-Wheel/spinningwheel.js',
++            'scripts/app.js',
++            'scripts/**/*.js',
++            'test/unit/**/*Spec.js'
++        ],
++
++
++        // test results reporter to use
++        // possible values: 'dots', 'progress'
++        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
++        reporters: ['progress'],
++
++
++        // web server port
++        port: 9876,
++
++
++        // enable / disable colors in the output (reporters and logs)
++        colors: true,
++
++
++        // level of logging
++        // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
++        logLevel: config.LOG_INFO,
++
++
++        // enable / disable watching file and executing tests whenever any file changes
++        autoWatch: true,
++
++
++        // start these browsers
++        // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
++        browsers: ['Chrome'],
++
++
++        // Continuous Integration mode
++        // if true, Karma captures browsers, runs the tests and exits
++        singleRun: false
++    });
++};
+diff --git a/package.json b/package.json
+index ed3fe8e..28f0566 100644
+--- a/package.json
++++ b/package.json
+@@ -5,16 +5,18 @@
+   "dependencies": {
+     "gulp": "^3.8.2",
+     "gulp-sass": "^0.7.2",
+-    "phonegap": "^3.5.0-0.20.4",
+-    "karma": "0.12.0",
+-    "karma-chrome-launcher": "0.1.2",
+-    "karma-jasmine": "0.2.2",
+-    "karma-ng-html2js-preprocessor": "0.1.0"
++    "phonegap": "^3.5.0-0.20.4"
+   },
+   "devDependencies": {
+     "db-migrate": "^0.7.1",
+     "gulp": "^3.8.2",
+-    "gulp-sass": "^0.7.2"
++    "gulp-sass": "^0.7.2",
++    "jasmine": "^2.2.1",
++    "karma": "0.12.0",
++    "karma-cli": "0.0.4",
++    "karma-chrome-launcher": "0.1.2",
++    "karma-jasmine": "0.2.2",
++    "karma-ng-html2js-preprocessor": "0.1.0"
+   },
+   "scripts": {
+     "test": "karma start"
+diff --git a/scripts/controllers/DateCtrl.js b/scripts/controllers/DateCtrl.js
+index 3cd86f5..d6625c2 100644
+--- a/scripts/controllers/DateCtrl.js
++++ b/scripts/controllers/DateCtrl.js
+@@ -1,71 +1,81 @@
+ 'use strict';
+ 
+ angular.module('petrusApp')
+-  .controller('DateCtrl', function ($scope) {
+-
+-
+-    var active = true;
+-
+-    // ScrollView sends no event for DateView? So quickfix Timeout
+-    setTimeout(function swExample() {
+-
+-
+-      // Hack to disable SpinningWheel on all other pages, sorry no time for a good solution atm
+-      var scrollView = $famous.find('#main-scroll-view')[0].renderNode,
+-        scrollViewHandler = scrollView.sync;
+-      var lastIndex = 0;
+-      scrollViewHandler.on('start', function (event) {
+-        var currentIndex = scrollView._node.index;
+-        if (currentIndex === 1) {
+-          if (!active) {
+-            SpinningWheel.reAddEventListener();
+-            active = true;
+-          }
+-        }
+-        else {
+-          if (active) {
+-            SpinningWheel.removeEventListener();
+-            active = false;
+-          }
+-        }
+-
+-        lastIndex = scrollView._node.index;
+-
+-      });
+-
+-
+-      var now = new Date();
+-      var days = {};
+-      var years = {};
+-      var months = {
+-        1: 'Jan',
+-        2: 'Feb',
+-        3: 'Mar',
+-        4: 'Apr',
+-        5: 'May',
+-        6: 'Jun',
+-        7: 'Jul',
+-        8: 'Aug',
+-        9: 'Sep',
+-        10: 'Oct',
+-        11: 'Nov',
+-        12: 'Dec'
+-      };
+-
+-      for (var i = 1; i < 32; i += 1) {
+-        days[i] = i;
+-      }
+-
+-      for (i = now.getFullYear(); i < now.getFullYear() + 11; i += 1) {
+-        years[i] = i;
+-      }
+-
+-
+-      SpinningWheel.container = document.getElementById('spinningwheel');
+-      SpinningWheel.addSlot(days, 'right', now.getDate());
+-      SpinningWheel.addSlot(months, '', now.getMonth() + 1);
+-      SpinningWheel.addSlot(years, 'right', now.getFullYear());
+-
+-      SpinningWheel.open();
+-    }, 1000);
+-  });
+\ No newline at end of file
++    .controller('DateCtrl', function ($scope, DeviceScale) {
++
++
++        var active = true;
++
++        // scaling GUI elements
++        $scope.transClockHandX = DeviceScale.toDevice(-80);
++        $scope.transClockHandY = DeviceScale.toDevice(-156);
++        $scope.sizeClockHand = DeviceScale.toDevice(50);
++
++        $scope.transSpinningWheelX = DeviceScale.toDevice(30);
++        $scope.transSpinningWheelY = DeviceScale.toDevice(190);
++        $scope.widthSpinningWheel = DeviceScale.toDevice(250);
++        $scope.heightSpinningWheel = DeviceScale.toDevice(215);
++
++        // ScrollView sends no event for DateView? So quickfix Timeout
++        setTimeout(function swExample() {
++
++
++            // Hack to disable SpinningWheel on all other pages, sorry no time for a good solution atm
++            var scrollView = $famous.find('#main-scroll-view')[0].renderNode,
++                scrollViewHandler = scrollView.sync;
++            var lastIndex = 0;
++            scrollViewHandler.on('start', function (event) {
++                var currentIndex = scrollView._node.index;
++                if (currentIndex === 1) {
++                    if (!active) {
++                        SpinningWheel.reAddEventListener();
++                        active = true;
++                    }
++                }
++                else {
++                    if (active) {
++                        SpinningWheel.removeEventListener();
++                        active = false;
++                    }
++                }
++
++                lastIndex = scrollView._node.index;
++
++            });
++
++
++            var now = new Date();
++            var days = {};
++            var years = {};
++            var months = {
++                1: 'Jan',
++                2: 'Feb',
++                3: 'Mar',
++                4: 'Apr',
++                5: 'May',
++                6: 'Jun',
++                7: 'Jul',
++                8: 'Aug',
++                9: 'Sep',
++                10: 'Oct',
++                11: 'Nov',
++                12: 'Dec'
++            };
++
++            for (var i = 1; i < 32; i += 1) {
++                days[i] = i;
++            }
++
++            for (i = now.getFullYear(); i < now.getFullYear() + 11; i += 1) {
++                years[i] = i;
++            }
++
++
++            SpinningWheel.container = document.getElementById('spinningwheel');
++            SpinningWheel.addSlot(days, 'right', now.getDate());
++            SpinningWheel.addSlot(months, '', now.getMonth() + 1);
++            SpinningWheel.addSlot(years, 'right', now.getFullYear());
++
++            SpinningWheel.open();
++        }, 1000);
++    });
+\ No newline at end of file
+diff --git a/scripts/controllers/ListCtrl.js b/scripts/controllers/ListCtrl.js
+index 06b47d2..eed6cdb 100644
+--- a/scripts/controllers/ListCtrl.js
++++ b/scripts/controllers/ListCtrl.js
+@@ -1,6 +1,39 @@
+ 'use strict';
+ 
+ angular.module('petrusApp')
+-  .controller('ListCtrl', function ($scope,weatherService) {
+-    $scope.result = weatherService.result;
+-  });
+\ No newline at end of file
++    .controller('ListCtrl', function ($scope, weatherService, DeviceScale) {
++
++        console.log('ListCtrl Scaling : ' + DeviceScale.toDevice(1));
++
++        $scope.widthResult = DeviceScale.toDevice(261);
++        $scope.heightResult = DeviceScale.toDevice(307);
++
++        $scope.transX0 = DeviceScale.toDevice(250);
++        $scope.transY0 = DeviceScale.toDevice(195);
++
++        $scope.transX1 = DeviceScale.toDevice(120);
++        $scope.transY1 = DeviceScale.toDevice(135);
++
++        $scope.transX2 = DeviceScale.toDevice(180);
++        $scope.transY2 = DeviceScale.toDevice(125);
++
++        $scope.transX3 = DeviceScale.toDevice(240);
++        $scope.transY3 = DeviceScale.toDevice(120);
++
++        $scope.transX4 = DeviceScale.toDevice(245);
++        $scope.transY4 = DeviceScale.toDevice(285);
++
++        $scope.transX5 = DeviceScale.toDevice(130);
++        $scope.transY5 = DeviceScale.toDevice(205);
++
++        $scope.transX6 = DeviceScale.toDevice(190);
++        $scope.transY6 = DeviceScale.toDevice(200);
++
++        $scope.transReloadX = DeviceScale.toDevice(245);
++        $scope.transReloadY = DeviceScale.toDevice(485);
++
++        $scope.widthPfeil = DeviceScale.toDevice(66);
++        $scope.heightPfeil = DeviceScale.toDevice(68);
++
++        $scope.result = weatherService.result;
++    });
+\ No newline at end of file
+diff --git a/scripts/controllers/LocationCtrl.js b/scripts/controllers/LocationCtrl.js
+index 5101261..c805b52 100644
+--- a/scripts/controllers/LocationCtrl.js
++++ b/scripts/controllers/LocationCtrl.js
+@@ -1,7 +1,16 @@
+ 'use strict';
+ 
+ angular.module('petrusApp')
+-  .controller('LocationCtrl', function ($scope, weatherService) {
++  .controller('LocationCtrl', function ($scope, weatherService, DeviceScale) {
++    console.log('LocationCtrl Scaling : ' + DeviceScale.toDevice(1));
++
++    $scope.transInputX = DeviceScale.toDevice(60);
++    $scope.transInputY = DeviceScale.toDevice(155);
++
++    $scope.transBellX = DeviceScale.toDevice(20);
++    $scope.transBellY = DeviceScale.toDevice(35);
++    $scope.widthBell = DeviceScale.toDevice(180);
++    $scope.heightBell = DeviceScale.toDevice(92);
+ 
+     $scope.keys = [
+       {key: 'q', top: 296, left: 17, width: 33, height: 46, bgLeft: 0, bgTop: 0},
+@@ -36,6 +45,14 @@ angular.module('petrusApp')
+       {key: 'del', top: 402, left: 278, width: 42, height: 49, bgLeft: -100, bgTop: -200}
+     ];
+ 
++    angular.forEach( $scope.keys, function(key){
++        key.top = DeviceScale.toDevice(key.top);
++        key.left = DeviceScale.toDevice(key.left);
++        key.width = DeviceScale.toDevice(key.width);
++        key.height = DeviceScale.toDevice(key.height);
++        key.bgLeft = DeviceScale.toDevice(key.bgLeft);
++        key.bgTop = DeviceScale.toDevice(key.bgTop);
++    } );
+ 
+     $scope.keyClick = function (key, $event) {
+       if (key === 'del') {
+diff --git a/scripts/controllers/ScrollViewCtrl.js b/scripts/controllers/ScrollViewCtrl.js
+index f18a62b..c22ae14 100644
+--- a/scripts/controllers/ScrollViewCtrl.js
++++ b/scripts/controllers/ScrollViewCtrl.js
+@@ -2,56 +2,60 @@
+ 
+ 
+ angular.module('petrusApp')
+-  .controller('ScrollViewCtrl', function ($scope, $famous, weatherService, $window) {
++    .controller('ScrollViewCtrl', function ($scope, $famous, weatherService, $window, DeviceScale) {
+ 
+ 
++        $scope.reload = function () {
++            $window.location.reload();
++        };
+ 
+-    $scope.reload = function(){
+-      $window.location.reload();
+-    };
++        $scope.activeViews = {
++            listView: false
++        };
+ 
+-    $scope.activeViews = {
+-      listView: false
+-    };
++        $window.$famous = $famous;
+ 
+-    $window.$famous = $famous;
++        $scope.weather = weatherService.data;
++        $scope.result = {
++            data: []
++        };
+ 
+-    $scope.weather = weatherService.data;
+-    $scope.result = {
+-      data: []
+-    };
+ 
++        $scope.getWeatherFor = function (weather) {
++            var resultArray = $scope.result.data.filter(function (element) {
++                return element.weather == weather;
++            });
+ 
+-    $scope.getWeatherFor = function (weather) {
+-      var resultArray = $scope.result.data.filter(function (element) {
+-        return element.weather == weather;
+-      });
++            var returnValue = 0;
++            if (resultArray.length > 0) {
++                returnValue = resultArray[0].count;
++            }
++            return returnValue;
++        };
+ 
+-      var returnValue = 0;
+-      if(resultArray.length>0){
+-        returnValue = resultArray[0].count;
+-      }
+-      return returnValue;
+-    };
++        var EventHandler = $famous['famous/core/EventHandler'];
++        var Transitionable = $famous['famous/transitions/Transitionable'];
++        var Engine = $famous['famous/core/Engine'];
++        $scope.enginePipe = new EventHandler();
++        Engine.pipe($scope.enginePipe);
+ 
+-    var EventHandler = $famous['famous/core/EventHandler'];
+-    var Transitionable = $famous['famous/transitions/Transitionable'];
+-    var Engine = $famous['famous/core/Engine'];
+-    $scope.enginePipe = new EventHandler();
+-    Engine.pipe($scope.enginePipe);
++        DeviceScale.setDeviceScreen([$window.screen.width, $window.screen.height]);
++        DeviceScale.setVirtualScreen([320, 568]);
+ 
+-    $scope.width = 320;
+-    $scope.height = 568;
++        $scope.width = DeviceScale.toDevice(320);
++        $scope.height = DeviceScale.toDevice(568);
+ 
+-    $scope.animation = {
+-      earthquake: false
+-    };
++        console.log($scope.width + '/' + $scope.height);
+ 
+-    $scope.options = {
+-      mainScrollView: {
+-        paginated: true,
+-        direction: 0
+-      }
+-    }
++        $scope.animation = {
++            earthquake: false
++        };
+ 
+-  });
+\ No newline at end of file
++        $scope.options = {
++            mainScrollView: {
++                paginated: true,
++                direction: 0
++            }
++        }
++
++    });
+\ No newline at end of file
+diff --git a/scripts/controllers/SendCtrl.js b/scripts/controllers/SendCtrl.js
+index 156a902..8120283 100644
+--- a/scripts/controllers/SendCtrl.js
++++ b/scripts/controllers/SendCtrl.js
+@@ -1,45 +1,52 @@
+ 'use strict';
+ 
+ angular.module('petrusApp')
+-  .controller('SendCtrl', function ($scope, $timeout, weatherService) {
+-
+-    $scope.options = {
+-      translate: [75, 80],
+-      size: [180, 225]
+-    };
+-
+-    $scope.submit = function () {
+-      // Activate Animations
+-      $scope.active = true;
+-      $scope.animation.earthquake = true;
+-      $scope.animation.fadeOut = true;
+-
+-      // Set Data
+-      var date = SpinningWheel.getSelectedValues().keys;
+-      weatherService.data.date = date[2] + '-' + date[1] + '-' + date[0];
+-      weatherService.data.weather = weatherService.data.weather % 7;
+-      weatherService.send(weatherService.data)
+-        .then(function (result) {
+-          $scope.result.data = result.data;
+-        });
+-
+-      $timeout(function () {
+-
+-        // Change Page to Letter View
+-        $famous.find('fa-scroll-view')[0].renderNode.goToNextPage();
+-
+-        // Change Animation
+-        $scope.animation.earthquake = false;
+-        $scope.animation.fadeOut = false;
+-        $scope.animation.fadeIn = true;
+-        
+-        $timeout(function () {
+-          // Go To Last Page
+-          //$famous.find('fa-scroll-view')[0].renderNode.goToNextPage();
+-          $scope.activeViews.listView = true;
+-        }, 3000);
+-
+-      }, 5000);
+-    }
+-
+-  });
+\ No newline at end of file
++    .controller('SendCtrl', function ($scope, $timeout, weatherService, DeviceScale) {
++
++        console.log('SendCtrl Scaling : ' + DeviceScale.toDevice(1));
++
++        $scope.options = {
++            translate: [DeviceScale.toDevice(75), DeviceScale.toDevice(80)],
++            size: [DeviceScale.toDevice(184), DeviceScale.toDevice(227)]
++        };
++
++        $scope.transBoltX = DeviceScale.toDevice(76);
++        $scope.transBoltY = DeviceScale.toDevice(360);
++        $scope.widthBolt = DeviceScale.toDevice(134);
++        $scope.heightBolt = DeviceScale.toDevice(158);
++
++        $scope.submit = function () {
++            // Activate Animations
++            $scope.active = true;
++            $scope.animation.earthquake = true;
++            $scope.animation.fadeOut = true;
++
++            // Set Data
++            var date = SpinningWheel.getSelectedValues().keys;
++            weatherService.data.date = date[2] + '-' + date[1] + '-' + date[0];
++            weatherService.data.weather = weatherService.data.weather % 7;
++            weatherService.send(weatherService.data)
++                .then(function (result) {
++                    $scope.result.data = result.data;
++                });
++
++            $timeout(function () {
++
++                // Change Page to Letter View
++                $famous.find('fa-scroll-view')[0].renderNode.goToNextPage();
++
++                // Change Animation
++                $scope.animation.earthquake = false;
++                $scope.animation.fadeOut = false;
++                $scope.animation.fadeIn = true;
++
++                $timeout(function () {
++                    // Go To Last Page
++                    //$famous.find('fa-scroll-view')[0].renderNode.goToNextPage();
++                    $scope.activeViews.listView = true;
++                }, 3000);
++
++            }, 5000);
++        }
++
++    });
+\ No newline at end of file
+diff --git a/scripts/controllers/WishCtrl.js b/scripts/controllers/WishCtrl.js
+index 9891d5a..b5d382d 100644
+--- a/scripts/controllers/WishCtrl.js
++++ b/scripts/controllers/WishCtrl.js
+@@ -1,21 +1,61 @@
+ 'use strict';
+ 
+ angular.module('petrusApp')
+-  .controller('WishCtrl', function ($scope,weatherService) {
+-
+-    weatherService.data.temperature = 20;
+-    var minHeight = 140;
+-    var maxHeight = 340;
+-    $scope.handleTouch = function (event) {
+-      if (event && event.changedTouches && event.changedTouches[0]) {
+-        var touch = event.changedTouches[0];
+-      }
+-      var currentY = touch.clientY;
+-      var step = (maxHeight - minHeight) / 100;
+-      if (currentY < maxHeight && currentY > minHeight) {
+-        $scope.weather.temperature = ((maxHeight - currentY) / step) - 45;
+-      }
+-
+-    }
+-
+-  });
+\ No newline at end of file
++    .controller('WishCtrl', function ($scope, weatherService, DeviceScale) {
++        var minHeight;
++        var maxHeight;
++        var step;
++        var temperatureOffset;
++
++        $scope.transDiscX = DeviceScale.toDevice(10);
++        $scope.transDiscY = DeviceScale.toDevice(55);
++        $scope.sizeDisc = DeviceScale.toDevice(210);
++
++
++        $scope.transPushX = DeviceScale.toDevice(240);
++        $scope.transPushY = DeviceScale.toDevice(170);
++
++        $scope.sizePush = DeviceScale.toDevice(80);
++        $scope.transMarkerAreaX = DeviceScale.toDevice(130);
++        $scope.transMarkerAreaY = DeviceScale.toDevice(160);
++        $scope.widthMarkerArea = DeviceScale.toDevice(50);
++
++        $scope.heightMarkerArea = DeviceScale.toDevice(180);
++        $scope.widthMarker = DeviceScale.toDevice(25);
++
++
++        $scope.heightMarker = DeviceScale.toDevice(3);
++
++        weatherService.data.temperature = 20;
++        $scope.scaledTemperature = scaleTemperature(weatherService.data.temperature);
++
++        minHeight = 140;
++        maxHeight = 340;
++        temperatureOffset = 45;
++
++        step = (maxHeight - minHeight) / 100;
++
++        $scope.handleTouch = function (event) {
++            var touch;
++            var currentY;
++
++            if (event && event.changedTouches && event.changedTouches[0]) {
++                touch = event.changedTouches[0];
++            }
++
++            // scale the device touch coord back to virtual coords
++            currentY = DeviceScale.toVirtual(touch.clientY);
++            if (currentY < maxHeight && currentY > minHeight) {
++                $scope.weather.temperature = ((maxHeight - currentY) / step) - temperatureOffset;
++
++                // round the temperature to 0.5 steps
++                $scope.weather.temperature = Math.round($scope.weather.temperature * 2.0) / 2.0;
++
++                $scope.scaledTemperature = scaleTemperature($scope.weather.temperature);
++            }
++        };
++
++        function scaleTemperature(temperature) {
++            return DeviceScale.toDevice(-temperature * 1.8 + 51 * 1.8)
++        }
++    });
+\ No newline at end of file
+diff --git a/scripts/services/DeviceScale.js b/scripts/services/DeviceScale.js
+new file mode 100644
+index 0000000..9838166
+--- /dev/null
++++ b/scripts/services/DeviceScale.js
+@@ -0,0 +1,52 @@
++(function () {
++    'use strict';
++
++    angular
++        .module('petrusApp')
++        .factory('DeviceScale', DeviceScale);
++
++    /* @ngInject */
++    function DeviceScale() {
++        var screenSize = [];
++        var virtualSize = [];
++        var scale;
++        var service = {
++            toDevice: toDevice,
++            toVirtual: toVirtual,
++            setDeviceScreen: setDeviceScreen,
++            setVirtualScreen: setVirtualScreen
++        };
++
++        return service;
++
++        ////////////////
++
++        function toDevice(value) {
++            if(scale){
++                return value * scale;
++            }
++        }
++
++        function toVirtual(value) {
++            if(scale){
++                return value / scale;
++            }
++        }
++
++        function calculateScale() {
++            if (screenSize && virtualSize) {
++                scale = screenSize[0] / virtualSize[0];
++            }
++        }
++
++        function setDeviceScreen(size) {
++            screenSize = size;
++            calculateScale();
++        }
++
++        function setVirtualScreen(size) {
++            virtualSize = size;
++            calculateScale();
++        }
++    }
++})();
+\ No newline at end of file
+diff --git a/test/unit/DeviceScaleSpec.js b/test/unit/DeviceScaleSpec.js
+new file mode 100644
+index 0000000..9f7e8ca
+--- /dev/null
++++ b/test/unit/DeviceScaleSpec.js
+@@ -0,0 +1,130 @@
++'use strict';
++
++/* jasmine specs for controllers go here */
++describe('DeviceScale', function () {
++    var DeviceScale;
++
++    beforeEach(module('petrusApp'));
++    beforeEach(inject(function(_DeviceScale_){
++        DeviceScale = _DeviceScale_;
++    }));
++
++    it("should exist", function () {
++        expect(DeviceScale).toBeDefined();
++    });
++
++    describe("setDeviceScreen", function () {
++        it("should exist and be a function", function () {
++            expect(DeviceScale.setDeviceScreen).toBeDefined();
++            expect(angular.isFunction( DeviceScale.setDeviceScreen)).toBe(true);
++        });
++    });
++
++    describe("setVirtualScreen", function () {
++        it("should exist and be a function", function () {
++            expect(DeviceScale.setVirtualScreen).toBeDefined();
++            expect(angular.isFunction( DeviceScale.setVirtualScreen)).toBe(true);
++        });
++    });
++
++    describe("toDevice with same aspect ratio", function () {
++        beforeEach(function () {
++            DeviceScale.setDeviceScreen([1000, 1000]);
++            DeviceScale.setVirtualScreen([500, 500]);
++        });
++
++        it("should exist and be a function", function () {
++            expect(DeviceScale.toDevice).toBeDefined();
++            expect(angular.isFunction( DeviceScale.toDevice)).toBe(true);
++        });
++
++
++        it("should scale a number", function () {
++            var result;
++
++            result = DeviceScale.toDevice(500);
++            expect(result).toBe(1000);
++
++            result = DeviceScale.toDevice(1);
++            expect(result).toBe(2);
++
++            result = DeviceScale.toDevice(0);
++            expect(result).toBe(0);
++
++            result = DeviceScale.toDevice(274);
++            expect(result).toBe(548);
++
++            result = DeviceScale.toDevice(900);
++            expect(result).toBe(1800);
++        });
++    });
++
++    describe("toDevice with different aspect ratio", function () {
++        beforeEach(function () {
++            DeviceScale.setDeviceScreen([375, 667]);
++            DeviceScale.setVirtualScreen([320, 568]);
++        });
++
++        it("should scale numbers with 1.171875 ", function () {
++            var result;
++
++            result = DeviceScale.toDevice(320);
++            expect(result).toBe(375);
++
++
++            // scale depending on width is 375 / 320 -> * 568 so we loose 2 vertical pixels
++            result = DeviceScale.toDevice(568);
++            expect(result).toBe(665.625);
++        });
++    });
++    describe("toVirtual with same aspect ratio", function () {
++        beforeEach(function () {
++            DeviceScale.setDeviceScreen([1000, 1000]);
++            DeviceScale.setVirtualScreen([500, 500]);
++        });
++
++        it("should exist and be a function", function () {
++            expect(DeviceScale.toVirtual).toBeDefined();
++            expect(angular.isFunction( DeviceScale.toVirtual)).toBe(true);
++        });
++
++
++        it("should scale a number", function () {
++            var result;
++
++            result = DeviceScale.toVirtual(1000);
++            expect(result).toBe(500);
++
++            result = DeviceScale.toVirtual(2);
++            expect(result).toBe(1);
++
++            result = DeviceScale.toVirtual(0);
++            expect(result).toBe(0);
++
++            result = DeviceScale.toVirtual(548);
++            expect(result).toBe(274);
++
++            result = DeviceScale.toVirtual(1800);
++            expect(result).toBe(900);
++        });
++    });
++
++    describe("toDevice with different aspect ratio", function () {
++        beforeEach(function () {
++            DeviceScale.setDeviceScreen([375, 667]);
++            DeviceScale.setVirtualScreen([320, 568]);
++        });
++
++        it("should scale numbers with 1.171875 ", function () {
++            var result;
++
++            result = DeviceScale.toVirtual(375);
++            expect(result).toBe(320);
++
++            // scale depending on width is 375 / 320 -> * 568 so we loose 2 vertical pixels
++            result = DeviceScale.toVirtual(665.625);
++            expect(result).toBe(568);
++        });
++    });
++});
++
+-- 
+1.8.4.2
+
