@@ -6,6 +6,7 @@
         content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, minimal-ui"/>
   <title></title>
 
+  <link rel="stylesheet" href="bower_components/angular/angular-csp.css">
   <link rel="stylesheet" href="bower_components/famous-angular/dist/famous-angular.css">
   <link rel="stylesheet" href="bower_components/Spinning-Wheel/spinningwheel.css"/>
   <link rel="stylesheet" href="css/location.css">
@@ -153,7 +154,7 @@
   </fa-scroll-view>
 
 
-  <fa-view ng-if="activeViews.listView" id="list" ng-controller="ListCtrl">
+  <fa-view ng-cloak ng-if="activeViews.listView" id="list" ng-controller="ListCtrl">
     <fa-modifier>
       <fa-image-surface fa-image-url="images/screen-list/cover.jpg" fa-size="[width,height]">
       </fa-image-surface>
